@@ -1,6 +1,6 @@
 import { ModeToggle } from '@/components/mode-toggle'
 
-export default function Header() {
+const Header = () => {
     return (
         <header className="bg-card border-b border-border sticky top-0 z-50">
             <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,3 +18,5 @@ export default function Header() {
         </header>
     )
 }
+
+export default Header

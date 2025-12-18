@@ -20,6 +20,13 @@ export const ROUTES: Route[] = [
         component: Dashboard,
     },
     {
+        path: '/expense',
+        label: 'Expense',
+        useInNavigation: true,
+        showNav: true,
+        component: Dashboard,
+    },
+    {
         path: '*',
         label: 'Not Found',
         useInNavigation: false,

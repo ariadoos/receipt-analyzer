@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 import { useLocation } from 'react-router-dom'
 import { ROUTES } from '@/config/routes'
 
-export default function Nav() {
+const Nav = () => {
     const navItems = ROUTES.filter(route => route.useInNavigation);
     const location = useLocation()
 
@@ -29,3 +29,5 @@ export default function Nav() {
         </nav>
     )
 }
+
+export default Nav

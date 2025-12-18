@@ -8,7 +8,7 @@ interface LayoutProps {
     children: ReactNode
 }
 
-export default function Layout({ children }: LayoutProps) {
+const Layout = ({ children }: LayoutProps) => {
     const currentRoute = ROUTES.find(route => route.path === location.pathname);
     const shouldShowNav = currentRoute !== undefined && currentRoute?.showNav !== false;
 
@@ -35,3 +35,5 @@ export default function Layout({ children }: LayoutProps) {
         </div>
     )
 }
+
+export default Layout
