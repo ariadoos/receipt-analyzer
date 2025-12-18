@@ -8,7 +8,7 @@ const Nav = () => {
     const location = useLocation()
 
     return (
-        <nav className="bg-card border-b border-border">
+        <nav className="sticky bg-card border-t border-b border-border z-50">
             <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 flex space-x-8 h-14 items-center">
                 {navItems.map((item) => (
                     <Link

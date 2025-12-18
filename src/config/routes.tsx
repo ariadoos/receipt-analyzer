@@ -1,4 +1,6 @@
+import Category from '@/pages/Category'
 import Dashboard from '@/pages/Dashboard'
+import Expense from '@/pages/Expense'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { type ReactNode } from 'react'
 
@@ -24,7 +26,14 @@ export const ROUTES: Route[] = [
         label: 'Expense',
         useInNavigation: true,
         showNav: true,
-        component: Dashboard,
+        component: Expense,
+    },
+    {
+        path: '/category',
+        label: 'Category',
+        useInNavigation: true,
+        showNav: true,
+        component: Category,
     },
     {
         path: '*',

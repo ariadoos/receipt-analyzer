@@ -1,0 +1,21 @@
+// Predefined color palette
+export const COLORS = [
+    { name: 'Red', value: '#ef4444', light: '#fee2e2' },
+    { name: 'Orange', value: '#f97316', light: '#ffedd5' },
+    { name: 'Amber', value: '#f59e0b', light: '#fef3c7' },
+    { name: 'Yellow', value: '#eab308', light: '#fef9c3' },
+    { name: 'Lime', value: '#84cc16', light: '#ecfccb' },
+    { name: 'Green', value: '#22c55e', light: '#dcfce7' },
+    { name: 'Emerald', value: '#10b981', light: '#d1fae5' },
+    { name: 'Teal', value: '#14b8a6', light: '#ccfbf1' },
+    { name: 'Cyan', value: '#06b6d4', light: '#cffafe' },
+    { name: 'Sky', value: '#0ea5e9', light: '#e0f2fe' },
+    { name: 'Blue', value: '#3b82f6', light: '#dbeafe' },
+    { name: 'Indigo', value: '#6366f1', light: '#e0e7ff' },
+    { name: 'Violet', value: '#8b5cf6', light: '#ede9fe' },
+    { name: 'Purple', value: '#a855f7', light: '#f3e8ff' },
+    { name: 'Fuchsia', value: '#d946ef', light: '#fae8ff' },
+    { name: 'Pink', value: '#ec4899', light: '#fce7f3' },
+    { name: 'Rose', value: '#f43f5e', light: '#ffe4e6' },
+    { name: 'Slate', value: '#64748b', light: '#f1f5f9' },
+];
