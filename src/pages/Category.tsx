@@ -29,7 +29,7 @@ const Category = () => {
         toast.success("Category updated!");
     };
 
-    const onCategoryDelete = (categoryId: number) => {
+    const handleDelete = (categoryId: number) => {
         const filteredCategories = categories.filter((category) => category.id !== categoryId);
         setCategories(filteredCategories);
     }
@@ -91,7 +91,7 @@ const Category = () => {
                                                     </Button>
                                                     <ConfirmDialog
                                                         title={`Delete ${cat.name}?`}
-                                                        onConfirm={() => onCategoryDelete(cat.id)}
+                                                        onConfirm={() => handleDelete(cat.id)}
                                                         trigger={
                                                             <Button className="cursor-pointer" variant="ghost" size="sm">
                                                                 Delete
