@@ -29,13 +29,16 @@ const Expense = () => {
 
     // Handle Update
     const handleUpdate = (data: ExpenseFormData) => {
+        console.log(data)
         setEditingId(null);
         toast.success("Expense updated!");
     };
 
     const handleDelete = (expenseId: number) => {
+        console.log(expenseId)
         // setCategories(filteredCategories);
         toast.success("Expense updated!");
+        setExpenses([]);
 
     }
 
