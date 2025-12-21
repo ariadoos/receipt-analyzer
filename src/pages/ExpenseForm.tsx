@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import z from 'zod';
 
-interface ExpenseBackend {
+export interface ExpenseBackend {
     id: number;
     amount: number; // Backend sends a number
     categoryId: string
@@ -18,7 +18,7 @@ type ExpenseFormData = z.infer<typeof formSchema>
 
 interface ExpenseFormProps {
     id: string;
-    initialData?: ExpenseBackend; // REMOVE ANY
+    initialData?: ExpenseFormData; // REMOVE ANY
     onSubmit: (data: ExpenseFormData) => void;
     onCancel?: () => void;
     buttonLabel?: string;

@@ -3,16 +3,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { ExpenseForm, type ExpenseFormData } from './ExpenseForm';
+import { ExpenseForm, type ExpenseBackend, type ExpenseFormData } from './ExpenseForm';
+
+const parseInitialData = (data: ExpenseBackend): ExpenseFormData => {
+    return {
+        categoryId: data.categoryId,
+        amount: String(data.amount),
+        description: data.description
+    }
+}
 
 const Expense = () => {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [expenses, setExpenses] = useState([
-        { description: 'Grocery shopping', amount: 85.50, categoryId: 'Food', date: '12/15', color: 'red' },
-        { description: 'Gas station', amount: 45.00, categoryId: 'Transport', date: '12/14', color: 'blue' },
-        { description: 'Movie tickets', amount: 32.00, categoryId: 'Entertainment', date: '12/13', color: 'purple' },
-        { description: 'Internet bill', amount: 60.00, categoryId: 'Bills', date: '12/12', color: 'green' },
-        { description: 'Restaurant dinner', amount: 78.20, categoryId: 'Food', date: '12/11', color: 'red' }
+        { id: 1, description: 'Grocery shopping', amount: 85.50, categoryId: 'Food', date: '12/15', color: 'red' },
+        { id: 2, description: 'Gas station', amount: 45.00, categoryId: 'Transport', date: '12/14', color: 'blue' },
+        { id: 3, description: 'Movie tickets', amount: 32.00, categoryId: 'Entertainment', date: '12/13', color: 'purple' },
+        { id: 4, description: 'Internet bill', amount: 60.00, categoryId: 'Bills', date: '12/12', color: 'green' },
+        { id: 5, description: 'Restaurant dinner', amount: 78.20, categoryId: 'Food', date: '12/11', color: 'red' }
     ]);
 
     const handleCreate = (data: ExpenseFormData) => {
@@ -64,7 +72,7 @@ const Expense = () => {
                                     key={`edit-${idx}`}
                                     className='overflow-hidden border border-solid border-border rounded p-3'>
                                     <ExpenseForm id="form-expense-edit"
-                                        initialData={exp}
+                                        initialData={parseInitialData(exp)}
                                         onSubmit={handleUpdate}
                                         onCancel={() => setEditingId(null)}
                                         buttonLabel="Update" />

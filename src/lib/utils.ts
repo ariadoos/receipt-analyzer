@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function cleanObject<T extends Record<string, unknown>>(obj: T): T {
+export function cleanObject<T extends object>(obj: T): T {
   return Object.fromEntries(
     Object.entries(obj).filter(([, value]) => value !== undefined && value !== null && value !== "")
   ) as T;
