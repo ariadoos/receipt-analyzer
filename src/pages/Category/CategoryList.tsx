@@ -9,7 +9,7 @@ const CategoryList = () => {
     const { categories, isLoading, error, refetch } = useCategories(userId);
 
     if (isLoading)
-        return <ListSkeleton count={5} height="24px" className="mt-2" />
+        return <ListSkeleton count={5} className="mt-2" />
 
     if (!isLoading && error)
         return <ErrorState error={error} onRetry={refetch} />

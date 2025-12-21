@@ -9,7 +9,7 @@ type ListSkeletonProps = {
 
 const ListSkeleton = ({
     count = 3,
-    height = "16px",
+    height = "80px",
     width = "100%",
     className = "",
 }: ListSkeletonProps) => {
@@ -19,7 +19,7 @@ const ListSkeleton = ({
                 return (
                     <Skeleton
                         key={i}
-                        className={`h-[${height}] w-[${width}]`}
+                        style={{ height, width }}
                     />
                 )
             })}
