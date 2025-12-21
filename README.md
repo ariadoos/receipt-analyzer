@@ -9,6 +9,7 @@ An Expense Analyzer web application built with React and Firebase Firestore, fea
 ## 📁 Project Structure
 
 ```
+├── .github/workflows # deployment scripts
 ├── src / # React Frontend using Vite, TailwindV4, Shadcn, React Hook Form
 └── firebase.json # Firebase configuration
 ```
