@@ -1,13 +1,12 @@
-import { COLORS } from '@/constants/colors';
-import * as services from '@/services/db';
-import { type CategoryFormData } from "./CategoryForm";
-import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { Button } from '@/components/ui/button';
-import { memo, useState } from 'react';
-import { CategoryEditDialog } from './CategoryEditDialog';
-import { set } from 'zod';
 import { Spinner } from '@/components/ui/spinner';
+import { COLORS } from '@/constants/colors';
+import * as services from '@/services/db';
+import { memo, useState } from 'react';
+import { toast } from 'sonner';
+import { CategoryEditDialog } from './CategoryEditDialog';
+import { type CategoryFormData } from "./CategoryForm";
 
 interface CategoryListItemProps {
     category: services.WithId<services.CategoryFields>;

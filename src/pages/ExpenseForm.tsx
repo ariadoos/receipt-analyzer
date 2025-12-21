@@ -18,7 +18,7 @@ type ExpenseFormData = z.infer<typeof formSchema>
 
 interface ExpenseFormProps {
     id: string;
-    initialData?: any | ExpenseBackend; // REMOVE ANY
+    initialData?: ExpenseBackend; // REMOVE ANY
     onSubmit: (data: ExpenseFormData) => void;
     onCancel?: () => void;
     buttonLabel?: string;
