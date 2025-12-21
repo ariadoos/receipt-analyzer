@@ -2,27 +2,20 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon, InputGroupText, InputGroupTextarea } from "@/components/ui/input-group";
+import { Spinner } from "@/components/ui/spinner";
 import { COLORS } from "@/constants/colors";
 import { CURRENCY } from "@/constants/currency";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
-import z from 'zod';
-
-interface CategoryBackend {
-    id: number;
-    name: string;
-    budget: number; // Backend sends a number
-    color: string;
-    description?: string;
-}
+import { z } from 'zod';
 
 type CategoryFormData = z.infer<typeof formSchema>
-
 interface CategoryFormProps {
     id: string;
-    initialData?: CategoryBackend & { id?: number };
-    onSubmit: (data: CategoryFormData) => void;
+    initialData?: CategoryFormData;
+    isProcessing?: boolean;
+    onSubmit: (data: CategoryFormData, resetForm: () => void) => void;
     onCancel?: () => void;
     buttonLabel?: string;
 }
@@ -46,7 +39,14 @@ const formSchema = z.object({
         .optional()
 })
 
-const CategoryForm = ({ id, initialData, onSubmit, onCancel, buttonLabel = "Save" }: CategoryFormProps) => {
+const CategoryForm = ({
+    id,
+    initialData,
+    onSubmit,
+    onCancel,
+    buttonLabel = "Save",
+    isProcessing = false
+}: CategoryFormProps) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: initialData ? {
@@ -60,8 +60,12 @@ const CategoryForm = ({ id, initialData, onSubmit, onCancel, buttonLabel = "Save
         },
     });
 
+    const handleSubmitForm = (data: CategoryFormData) => {
+        onSubmit(data, form.reset);
+    };
+
     return (
-        <form id={id} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" >
+        <form id={id} onSubmit={form.handleSubmit(handleSubmitForm)} className="space-y-4" >
             <FieldGroup>
                 {/* Name Field */}
                 <Controller
@@ -75,6 +79,7 @@ const CategoryForm = ({ id, initialData, onSubmit, onCancel, buttonLabel = "Save
                             <Input
                                 {...field}
                                 placeholder="Groceries"
+                                className="placeholder:text-input"
                                 id={`${id}-title`}
                                 aria-invalid={fieldState.invalid}
                                 autoComplete="off" />
@@ -95,6 +100,7 @@ const CategoryForm = ({ id, initialData, onSubmit, onCancel, buttonLabel = "Save
                                 {...field}
                                 id={`${id}-budget`}
                                 aria-invalid={fieldState.invalid}
+                                className="placeholder:text-input"
                                 placeholder={`20`}
                                 autoComplete="off"
                             />
@@ -120,7 +126,7 @@ const CategoryForm = ({ id, initialData, onSubmit, onCancel, buttonLabel = "Save
                                     id={`${id}-description`}
                                     placeholder="Groceries items bought from ..."
                                     rows={6}
-                                    className="min-h-24 resize-none"
+                                    className="min-h-24 resize-none placeholder:text-input"
                                     aria-invalid={fieldState.invalid}
                                 />
                                 <InputGroupAddon align="block-end">
@@ -191,16 +197,19 @@ const CategoryForm = ({ id, initialData, onSubmit, onCancel, buttonLabel = "Save
             <div className="flex justify-end gap-2 pt-2">
                 <Field orientation="horizontal">
                     {onCancel && (
-                        <Button className="cursor-pointer" type="button" variant="outline" onClick={onCancel}>
+                        <Button className="cursor-pointer" type="button" variant="outline" disabled={isProcessing} onClick={onCancel}>
                             Cancel
                         </Button>
                     )}
                     {!onCancel && (
-                        <Button className="cursor-pointer" type="button" variant="outline" onClick={() => form.reset()}>
+                        <Button className="cursor-pointer" type="button" variant="outline" disabled={isProcessing} onClick={() => form.reset()}>
                             Reset
                         </Button>
                     )}
-                    <Button className="cursor-pointer" type="submit" form={id}>{buttonLabel}</Button>
+                    <Button className="cursor-pointer" type="submit" form={id} disabled={isProcessing}>
+                        {isProcessing && <Spinner />}
+                        {buttonLabel}
+                    </Button>
                 </Field>
             </div>
         </form >

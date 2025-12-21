@@ -1,7 +1,5 @@
 import { initializeApp } from 'firebase/app';
 import {
-    collection,
-    getDocs,
     getFirestore,
 } from "firebase/firestore";
 
@@ -18,20 +16,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export const Firestore = {
-    getParticipants: async () => {
-        // 1. Reference the collection
-        const colRef = collection(db, "test");
-
-        // 2. Use getDocs (plural) to fetch the entire collection
-        const querySnapshot = await getDocs(colRef);
-
-        // 3. Map through the documents to get the data
-        const participants = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-
-        return participants;
-    },
-};
+export { db }

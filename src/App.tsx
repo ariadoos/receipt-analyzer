@@ -1,16 +1,11 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { ThemeProvider } from '@/context/theme-provider'
 import Layout from '@/components/common/Layout'
 import { ROUTES } from '@/config/routes'
+import { ThemeProvider } from '@/context/theme-provider'
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import './App.css'
-import { useEffect } from 'react'
-import { Firestore } from '@/config/firebase'
+import { Toaster } from '@/components/ui/sonner'
 
 function App() {
-  useEffect(() => {
-    Firestore.getParticipants().then((data) => console.log(data))
-  }, [])
-
   return (
     <ThemeProvider defaultTheme="light" storageKey="receipt-analyzer-ui-theme">
       <Router>
@@ -24,6 +19,7 @@ function App() {
               />
             ))}
           </Routes>
+          <Toaster />
         </Layout>
       </Router>
     </ThemeProvider>
