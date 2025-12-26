@@ -13,6 +13,8 @@ interface CategoriesStore {
     refetch: () => void;
 
     addCategory: (categoryData: services.CategoryFields) => Promise<string>;
+    updateCategory: (categoryId: string, categoryData: Partial<Omit<services.WithId<services.CategoryFields>, "id" | "createdAt">>) => Promise<void>;
+    deleteCategory: (categoryId: string) => Promise<void>;
 }
 
 export const useCategoriesStore = create<CategoriesStore>((set, get) => {
@@ -92,6 +94,14 @@ export const useCategoriesStore = create<CategoriesStore>((set, get) => {
         addCategory: async (categoryData) => {
             const savedId = await services.categoryService.create(categoryData);
             return savedId;
-        }
+        },
+
+        updateCategory: async (categoryId, categoryData) => {
+            await services.categoryService.update(categoryId, categoryData);
+        },
+
+        deleteCategory: async (categoryId) => {
+            await services.categoryService.delete(categoryId);
+        },
     }
 });

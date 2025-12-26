@@ -1,12 +1,13 @@
-import * as services from '@/services/db';
 import { toast } from 'sonner';
 import { CategoryForm, type CategoryFormData } from './CategoryForm';
 import { useState } from 'react';
 import { FirestoreServiceError } from '@/lib/dbErrors';
+import { useCategoriesStore } from '@/store/useCategoriesStore';
 
 const CategoryCreate = () => {
     const userId = 1;
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const { addCategory } = useCategoriesStore();
 
     const handleCreate = async (data: CategoryFormData, resetForm: () => void) => {
         if (isProcessing) return;
@@ -20,7 +21,7 @@ const CategoryCreate = () => {
         }
 
         try {
-            await services.categoryService.create(categoryData);
+            await addCategory(categoryData);
             toast.success("Category created successfully");
             resetForm();
         } catch (error: unknown) {

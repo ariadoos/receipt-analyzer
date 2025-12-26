@@ -1,13 +1,14 @@
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { CURRENCY } from '@/constants';
 import { COLORS } from '@/constants/colors';
 import * as services from '@/services/db';
+import { useCategoriesStore } from '@/store/useCategoriesStore';
 import { memo, useState } from 'react';
 import { toast } from 'sonner';
 import { CategoryEditDialog } from './CategoryEditDialog';
 import { type CategoryFormData } from "./CategoryForm";
-import { CURRENCY } from '@/constants';
 
 interface CategoryListItemProps {
     category: services.WithId<services.CategoryFields>;
@@ -28,7 +29,8 @@ const CategoryListItem = memo<CategoryListItemProps>(({
     category
 }) => {
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
-    const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+    const { updateCategory, deleteCategory } = useCategoriesStore();
 
     const handleUpdate = (data: CategoryFormData, editingId: string) => {
         if (!editingId || isProcessing) return;
@@ -40,7 +42,7 @@ const CategoryListItem = memo<CategoryListItemProps>(({
             budget: data.budget ? Number(data.budget) : undefined,
         }
 
-        services.categoryService.update(editingId, categoryData)
+        updateCategory(editingId, categoryData)
             .then(() => {
                 toast.success("Category updated successfully");
                 setDialogOpen(false);
@@ -55,7 +57,7 @@ const CategoryListItem = memo<CategoryListItemProps>(({
 
         setIsProcessing(true);
 
-        services.categoryService.delete(categoryId)
+        deleteCategory(categoryId)
             .then(() => {
                 toast.success("Category deleted successfully");
             })
