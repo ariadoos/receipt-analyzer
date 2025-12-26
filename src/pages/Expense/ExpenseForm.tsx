@@ -85,7 +85,7 @@ const ExpenseForm = ({
         } catch (error) {
             // Rollback on error
             console.error('Failed to create option:', error);
-            toast.error('Failed to create category option');
+            throw error;
         }
     };
 

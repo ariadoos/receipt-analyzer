@@ -86,6 +86,8 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
         setIsCreating(true);
         try {
             const savedId = await onCreateOption(newOption);
+            if (!savedId) return
+
             handleSelect({
                 ...newOption,
                 id: savedId
