@@ -32,7 +32,7 @@ const ExpenseEditDialog = ({
 }: ExpenseEditDialogProps) => {
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent id={id}>
+            <DialogContent id={id} className="lg:max-w-5xl overflow-y-scroll max-h-screen">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>{description}</DialogDescription>
