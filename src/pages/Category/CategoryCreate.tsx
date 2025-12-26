@@ -29,6 +29,7 @@ const CategoryCreate = () => {
             } else {
                 toast.error("An unexpected error occurred while creating the category");
             }
+        } finally {
             setIsProcessing(false);
         }
     }

@@ -5,12 +5,12 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog"
-import { CategoryForm, type CategoryFormData } from "./CategoryForm"
-
-type CategoryEditDialogProps = {
+import { ExpenseForm, type ExpenseFormData } from "./ExpenseForm"
+//
+type ExpenseEditDialogProps = {
     id: string
     isProcessing?: boolean
-    initialData: CategoryFormData
+    initialData: ExpenseFormData
     title: string
     description: string
     dialogOpen: boolean,
@@ -19,7 +19,7 @@ type CategoryEditDialogProps = {
     handleUpdate: () => void
 }
 
-const CategoryEditDialog = ({
+const ExpenseEditDialog = ({
     id,
     title,
     isProcessing = false,
@@ -29,17 +29,17 @@ const CategoryEditDialog = ({
     setDialogOpen,
     handleCancel,
     handleUpdate,
-}: CategoryEditDialogProps) => {
+}: ExpenseEditDialogProps) => {
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent id={id} className="lg:max-w-5xl overflow-y-scroll max-h-screen">
+            <DialogContent id={id}>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>{description}</DialogDescription>
                 </DialogHeader>
 
-                <CategoryForm
-                    id="form-category-edit"
+                <ExpenseForm
+                    id="form-expense-edit"
                     initialData={initialData}
                     onSubmit={handleUpdate}
                     onCancel={handleCancel}
@@ -51,5 +51,5 @@ const CategoryEditDialog = ({
     )
 }
 
-export { CategoryEditDialog, type CategoryEditDialogProps }
+export { ExpenseEditDialog, type ExpenseEditDialogProps }
 

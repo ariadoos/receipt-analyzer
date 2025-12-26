@@ -1,30 +1,27 @@
 import { db } from "@/config/firebase";
-import type { UserId } from "@/types";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { createBaseService, subscriptionErrorHandler, type WithId } from "./baseService";
 
-export interface CategoryFields {
-    name: string;
-    userId: UserId;
-    budget?: number;
-    color?: string;
-    description?: string
+export interface ExpenseFields {
+    amount: number;
+    description: string
+    userId: number;
+    categoryId?: string;
 }
 
-const collectionName = 'categories';
-const baseService = createBaseService<CategoryFields>(collectionName);
-const colRef = collection(db, collectionName);
+const collectionName = 'expenses';
+const baseService = createBaseService<ExpenseFields>(collectionName);
 
-export const categoryService = {
+export const expenseService = {
     ...baseService,
 
     subscribeToCollectionByUserId: <T>(
-        userId: UserId,
+        userId: number,
         onUpdate: (data: WithId<T>[]) => void,
         onError?: (error: Error) => void
     ) => {
         const q = query(
-            colRef,
+            collection(db, collectionName),
             where("userId", "==", userId)
         );
 
@@ -42,5 +39,5 @@ export const categoryService = {
         );
 
         return unsubscribe;
-    },
+    }
 }

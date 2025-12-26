@@ -7,6 +7,7 @@ import { memo, useState } from 'react';
 import { toast } from 'sonner';
 import { CategoryEditDialog } from './CategoryEditDialog';
 import { type CategoryFormData } from "./CategoryForm";
+import { CURRENCY } from '@/constants';
 
 interface CategoryListItemProps {
     category: services.WithId<services.CategoryFields>;
@@ -110,7 +111,7 @@ const CategoryListItem = memo<CategoryListItemProps>(({
             </div>
             <div className="flex justify-between text-sm mb-1">
                 {category.budget ? (
-                    <span>Budget: ${category.budget}</span>
+                    <span>Budget: {CURRENCY} {category.budget}</span>
                 ) : (
                     <span className="text-muted-foreground">No budget set</span>
                 )}

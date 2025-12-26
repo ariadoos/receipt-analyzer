@@ -5,6 +5,7 @@ import { InputGroup, InputGroupAddon, InputGroupText, InputGroupTextarea } from 
 import { Spinner } from "@/components/ui/spinner";
 import { COLORS } from "@/constants/colors";
 import { CURRENCY } from "@/constants/currency";
+import { getRandomColorName } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
@@ -55,7 +56,7 @@ const CategoryForm = ({
         } : {
             name: "",
             budget: "",
-            color: COLORS[0].name,
+            color: getRandomColorName(),
             description: ""
         },
     });

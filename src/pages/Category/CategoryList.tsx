@@ -1,12 +1,12 @@
 import EmptyState from "@/components/common/EmptyState";
 import ErrorState from "@/components/common/ErrorState";
 import ListSkeleton from "@/components/common/ListSkeleton";
-import useCategories from "@/hooks/useCategories";
 import CategoryListItem from "./CategoryListItem";
+import { useCategoriesStore } from "@/store/useCategoriesStore";
 
 const CategoryList = () => {
-    const userId = 1;
-    const { categories, isLoading, error, refetch } = useCategories(userId);
+    const { categories, loading: isLoading, error, refetch } = useCategoriesStore();
+
 
     if (isLoading)
         return <ListSkeleton count={5} className="mt-2" />

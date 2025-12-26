@@ -1,12 +1,21 @@
-import { type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import Footer from './Footer'
 import Header from './Header'
+import { useCategoriesStore } from '@/store/useCategoriesStore'
 
 interface LayoutProps {
     children: ReactNode
 }
 
 const Layout = ({ children }: LayoutProps) => {
+    const { subscribeToCategories } = useCategoriesStore();
+
+    useEffect(() => {
+        const userId = 1;
+        const unsubscribe = subscribeToCategories(userId);
+
+        return () => unsubscribe();
+    }, [subscribeToCategories])
 
     return (
         <div className="flex flex-col min-h-screen">
