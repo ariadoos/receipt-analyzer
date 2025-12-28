@@ -7,7 +7,7 @@ const Expense = () => {
         <div className="flex flex-col md:flex-row gap-4 justify-between" >
             <Card className="w-full md:max-w-md rounded-md" >
                 <CardHeader>
-                    <CardTitle>Category </CardTitle>
+                    <CardTitle>Add Expense</CardTitle>
                 </CardHeader>
                 < CardContent >
                     <ExpenseCreate />
