@@ -26,7 +26,7 @@ export type PaginationState = {
     lastDoc: QueryDocumentSnapshot<DocumentData, DocumentData> | null;
 }
 
-export const EXPENSES_PER_PAGE = 20;
+export const EXPENSES_PER_PAGE = 10;
 
 const fetchTotalCount = async (q: Query<DocumentData, DocumentData>) => {
     const snapshot = await getCountFromServer(q);
@@ -122,8 +122,8 @@ export const expenseService = {
                 );
             }
 
-            const queryForTotalCount = query(collection(db, collectionName), ...constraints);
-            const totalCount = await fetchTotalCount(queryForTotalCount);
+            // const queryForTotalCount = query(collection(db, collectionName), ...constraints);
+            // const totalCount = await fetchTotalCount(queryForTotalCount);
 
             if (cursor) {
                 // next
@@ -152,7 +152,7 @@ export const expenseService = {
                 hasMore,
                 lastDoc: snapshot.docs[snapshot.docs.length - 2] ?? null,
                 pageSize: EXPENSES_PER_PAGE,
-                totalCount
+                totalCount: 0
             }
 
             return {
