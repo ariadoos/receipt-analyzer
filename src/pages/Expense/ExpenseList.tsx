@@ -6,14 +6,12 @@ import useExpenses from "@/hooks/useExpenses";
 import { useCategoriesStore } from "@/store/useCategoriesStore";
 import { Filter } from "lucide-react";
 import { useMemo, useState } from "react";
-// import type { ExpenseFilterState } from "./ExpenseFilter";
-// import ExpenseFilter from "./ExpenseFilter";
-// import ExpenseListItem from "./ExpenseListItem";
-// import type { QueryDocumentSnapshot } from "firebase/firestore";
+import ExpenseFilter from "./ExpenseFilter";
+import ExpenseListItem from "./ExpenseListItem";
 
 
 const ExpensesList = () => {
-    const { expenses, pagination, initialLoading, error, filters, refetch } = useExpenses();
+    const { expenses, pagination, initialLoading, error, filters, setFilters, refetch } = useExpenses();
     const { categories, loading: categoriesLoading } = useCategoriesStore();
 
     const [showFilters, setShowFilters] = useState(false);
@@ -22,7 +20,8 @@ const ExpensesList = () => {
         new Map(categories.map(cat => [cat.id, cat])),
         [categories]
     );
-    console.log(categoryMap);
+
+    console.log('expenses', expenses);
 
     const activeFilterCount = [
         filters.searchTerm,
@@ -69,25 +68,25 @@ const ExpensesList = () => {
 
             </div>
             <div className="shrink-0">
-                {/* <ExpenseFilter
+                <ExpenseFilter
                     filters={filters}
                     setFilters={setFilters}
                     showFilters={showFilters}
                     setShowFilters={setShowFilters}
                     categories={categories}
                     activeFilterCount={activeFilterCount}
-                /> */}
+                />
             </div>
 
             {/* Expenses List */}
-            {/* {displayedExpenses.length === 0 ? (
+            {expenses.length === 0 ? (
                 <EmptyState
                     title="No expenses match your filters"
                     description="Try adjusting your filter criteria."
                 />
             ) : (
                 <div className="space-y-2">
-                    {displayedExpenses.map((expense) => {
+                    {expenses.map((expense) => {
                         const category = categoryMap.get(expense.categoryId || '');
                         return (
                             <ExpenseListItem
@@ -98,7 +97,7 @@ const ExpensesList = () => {
                         )
                     })}
                 </div>
-            )} */}
+            )}
 
             {/* Load More Button */}
             {/* {hasMore && (

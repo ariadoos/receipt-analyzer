@@ -14,8 +14,8 @@ export interface ExpenseFields {
 export type ExpensesFilterState = {
     startDate: Date | null
     endDate: Date | null
-    minAmount: number | null
-    maxAmount: number | null
+    minAmount: string | null
+    maxAmount: string | null
     searchTerm: string
 }
 
@@ -102,15 +102,15 @@ export const expenseService = {
                 );
             }
 
-            if (minAmount !== null && minAmount !== undefined) {
+            if (minAmount !== null && minAmount !== undefined && !isNaN(parseInt(minAmount))) {
                 constraints.push(
-                    where("amount", ">=", minAmount)
+                    where("amount", ">=", parseInt(minAmount))
                 );
             }
 
-            if (maxAmount !== null && maxAmount !== undefined) {
+            if (maxAmount !== null && maxAmount !== undefined && !isNaN(parseInt(maxAmount))) {
                 constraints.push(
-                    where("amount", "<=", maxAmount)
+                    where("amount", "<=", parseInt(maxAmount))
                 );
             }
 
@@ -135,6 +135,7 @@ export const expenseService = {
                 constraints.push(limit(fetchLimit));
             }
 
+            console.log(constraints);
             const q = query(collection(db, collectionName), ...constraints);
             const snapshot = await getDocs(q);
 

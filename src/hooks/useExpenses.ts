@@ -22,7 +22,8 @@ type Action =
     }
     | { type: 'FETCH_ERROR'; payload: string }
     | { type: 'UPDATE_PAGINATION'; payload: services.PaginationState }
-    | { type: 'UPDATE_INITIAL_LOADING' };
+    | { type: 'UPDATE_INITIAL_LOADING' }
+    | { type: 'SET_FILTERS', payload: services.ExpensesFilterState };
 
 const reducer = (state: State, action: Action): State => {
     switch (action.type) {
@@ -70,6 +71,11 @@ const reducer = (state: State, action: Action): State => {
 
             return state;
         }
+        case 'SET_FILTERS':
+            return {
+                ...state,
+                filters: action.payload
+            };
         default:
             return state;
     }
@@ -142,6 +148,12 @@ const useExpensesList = () => {
         }
     }, [state.isLoading, state.pagination.hasMore, state.pagination.lastDoc, fetchExpenses])
 
+    const setFilters = useCallback((filters: services.ExpensesFilterState) => {
+        dispatch({
+            type: "SET_FILTERS",
+            payload: filters,
+        });
+    }, [])
 
     useEffect(() => {
         fetchExpenses(false);
@@ -150,6 +162,7 @@ const useExpensesList = () => {
     return {
         ...state,
         loadMore,
+        setFilters,
         refetch: () => fetchExpenses(!state.initialLoading, state.pagination.lastDoc)
     };
 }
