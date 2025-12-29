@@ -1,27 +1,75 @@
-import type { UserId } from "@/types";
-import { useEffect, useReducer, useState } from "react";
+import { FirestoreServiceError } from '@/lib/dbErrors';
 import * as services from '@/services/db';
+import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
+import { useCallback, useEffect, useReducer } from "react";
 
 type State = {
     expenses: services.WithId<services.ExpenseFields>[];
+    initialLoading: boolean;
     isLoading: boolean;
     error: string | null;
+    filters: services.ExpensesFilterState;
+    pagination: services.PaginationState;
 };
 
 type Action =
     | { type: 'FETCH_START' }
-    | { type: 'FETCH_SUCCESS'; payload: services.WithId<services.ExpenseFields>[] }
-    | { type: 'FETCH_ERROR'; payload: string };
-
+    | {
+        type: 'FETCH_SUCCESS'; payload: {
+            data: services.WithId<services.ExpenseFields>[],
+            shouldAppend: boolean
+        }
+    }
+    | { type: 'FETCH_ERROR'; payload: string }
+    | { type: 'UPDATE_PAGINATION'; payload: services.PaginationState }
+    | { type: 'UPDATE_INITIAL_LOADING' };
 
 const reducer = (state: State, action: Action): State => {
     switch (action.type) {
         case 'FETCH_START':
-            return { ...state, isLoading: true, error: null };
-        case 'FETCH_SUCCESS':
-            return { isLoading: false, error: null, expenses: action.payload };
+            return {
+                ...state,
+                isLoading: true,
+                error: null
+            };
+        case 'FETCH_SUCCESS': {
+            const shouldAppend = action.payload.shouldAppend;
+            const expenses = shouldAppend ? [...state.expenses, ...action.payload.data] : action.payload.data;
+
+            return {
+                ...state,
+                isLoading: false,
+                error: null,
+                expenses,
+            };
+        }
         case 'FETCH_ERROR':
-            return { ...state, isLoading: false, error: action.payload, expenses: [] };
+            return {
+                ...state,
+                isLoading: false,
+                error: action.payload,
+                expenses: []
+            };
+        case 'UPDATE_PAGINATION': {
+            const pagination = action.payload;
+
+            return {
+                ...state,
+                pagination
+            };
+        }
+        case 'UPDATE_INITIAL_LOADING': {
+            const prevState = state.initialLoading;
+
+            if (prevState === true) {
+                return {
+                    ...state,
+                    initialLoading: false
+                }
+            }
+
+            return state;
+        }
         default:
             return state;
     }
@@ -30,41 +78,80 @@ const reducer = (state: State, action: Action): State => {
 const initialState = {
     expenses: [] as services.WithId<services.ExpenseFields>[],
     isLoading: true,
+    initialLoading: true,
     error: null,
+    filters: {
+        startDate: null,
+        endDate: null,
+        minAmount: null,
+        maxAmount: null,
+        searchTerm: '',
+    },
+    pagination: {
+        pageSize: services.EXPENSES_PER_PAGE,
+        hasMore: true,
+        totalCount: 0,
+        lastDoc: null
+    }
 }
 
-const useExpenses = (userId: UserId) => {
+const useExpensesList = () => {
+    const userId = 1;
     const [state, dispatch] = useReducer(reducer, initialState);
-    const [retryTrigger, setRetryTrigger] = useState(0);
+
+    const fetchExpenses = useCallback(async (shouldAppend = false, cursor?: QueryDocumentSnapshot<DocumentData, DocumentData> | null) => {
+        try {
+            dispatch({ type: "FETCH_START" });
+
+            const { data, pagination } =
+                await services.expenseService.getPaginatedExpensesByUserId<services.ExpenseFields>(
+                    userId,
+                    state.filters,
+                    cursor
+                );
+
+            dispatch({
+                type: "FETCH_SUCCESS",
+                payload: { data, shouldAppend },
+            });
+
+            dispatch({
+                type: "UPDATE_PAGINATION",
+                payload: pagination,
+            });
+
+            dispatch({ type: "UPDATE_INITIAL_LOADING" });
+        } catch (err) {
+            let errorMessage = 'Failed to fetch expenses';
+            if (err instanceof FirestoreServiceError) {
+                errorMessage = err.message
+            }
+
+            dispatch({ type: "UPDATE_INITIAL_LOADING" });
+
+            dispatch({
+                type: "FETCH_ERROR",
+                payload: errorMessage,
+            });
+        }
+    }, [state.filters])
+
+    const loadMore = useCallback(() => {
+        if (!state.isLoading && state.pagination.hasMore) {
+            fetchExpenses(true, state.pagination.lastDoc)
+        }
+    }, [state.isLoading, state.pagination.hasMore, state.pagination.lastDoc, fetchExpenses])
+
 
     useEffect(() => {
-        let isMounted = true;
-        dispatch({ type: 'FETCH_START' });
+        fetchExpenses(false);
+    }, [userId, state.filters, fetchExpenses])
 
-        const unsubscribe = services.expenseService.subscribeToCollectionByUserId<services.WithId<services.ExpenseFields>>(
-            userId,
-            (data) => {
-                if (isMounted) {
-                    dispatch({ type: 'FETCH_SUCCESS', payload: data });
-                }
-            },
-            (error) => {
-                if (isMounted) {
-                    dispatch({
-                        type: 'FETCH_ERROR',
-                        payload: error.message || 'An error occurred while fetching expenses'
-                    });
-                }
-            }
-        );
-
-        return () => {
-            isMounted = false;
-            unsubscribe();
-        }
-    }, [userId, retryTrigger])
-
-    return { ...state, refetch: () => setRetryTrigger(prev => prev + 1) };
+    return {
+        ...state,
+        loadMore,
+        refetch: () => fetchExpenses(!state.initialLoading, state.pagination.lastDoc)
+    };
 }
 
-export default useExpenses;
+export default useExpensesList;

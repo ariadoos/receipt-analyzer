@@ -33,8 +33,6 @@ const CategoryListItem = memo<ExpenseListItemProps>(({
     const categoryColor = category?.color ? getCategoryColor(category.color) : getCategoryColor(getRandomColorName());
 
     const handleUpdate = (data: ExpenseFormData, editingId: string) => {
-        console.log(data)
-        return
         if (!editingId || isProcessing) return;
 
         setIsProcessing(true);

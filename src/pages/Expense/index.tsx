@@ -5,7 +5,7 @@ import ExpensesList from './ExpenseList';
 const Expense = () => {
     return (
         <div className="flex flex-col md:flex-row gap-4 justify-between" >
-            <Card className="w-full md:max-w-md rounded-md" >
+            <Card className="md:max-w-md rounded-md w-full max-h-max" >
                 <CardHeader>
                     <CardTitle>Add Expense</CardTitle>
                 </CardHeader>
@@ -14,7 +14,7 @@ const Expense = () => {
                 </CardContent>
             </Card>
 
-            < Card className="w-full rounded-md md:max-w-2xl" >
+            < Card className="rounded-md md:max-w-2xl w-full" >
                 <CardHeader>
                     <CardTitle>Your Expenses</CardTitle>
                 </CardHeader>

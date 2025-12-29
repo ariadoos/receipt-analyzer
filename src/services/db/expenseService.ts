@@ -1,5 +1,7 @@
 import { db } from "@/config/firebase";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { handleFirestoreError } from "@/lib/dbErrors";
+import type { UserId } from "@/types";
+import { collection, getCountFromServer, getDocs, limit, onSnapshot, orderBy, Query, query, QueryConstraint, QueryDocumentSnapshot, startAfter, Timestamp, where, type DocumentData } from "firebase/firestore";
 import { createBaseService, subscriptionErrorHandler, type WithId } from "./baseService";
 
 export interface ExpenseFields {
@@ -7,6 +9,28 @@ export interface ExpenseFields {
     description: string
     userId: number;
     categoryId?: string;
+}
+
+export type ExpensesFilterState = {
+    startDate: Date | null
+    endDate: Date | null
+    minAmount: number | null
+    maxAmount: number | null
+    searchTerm: string
+}
+
+export type PaginationState = {
+    pageSize: number
+    hasMore: boolean
+    totalCount: number
+    lastDoc: QueryDocumentSnapshot<DocumentData, DocumentData> | null;
+}
+
+export const EXPENSES_PER_PAGE = 20;
+
+const fetchTotalCount = async (q: Query<DocumentData, DocumentData>) => {
+    const snapshot = await getCountFromServer(q);
+    return snapshot.data().count;
 }
 
 const collectionName = 'expenses';
@@ -39,5 +63,107 @@ export const expenseService = {
         );
 
         return unsubscribe;
+    },
+
+    getPaginatedExpensesByUserId: async<T>(
+        userId: UserId,
+        options: ExpensesFilterState,
+        cursor?: QueryDocumentSnapshot<DocumentData, DocumentData> | null
+    ): Promise<{
+        data: WithId<T>[];
+        pagination: PaginationState
+    }> => {
+        return handleFirestoreError(async () => {
+            const {
+                startDate,
+                endDate,
+                minAmount,
+                maxAmount,
+                searchTerm,
+            } = options;
+
+            const pageSize = EXPENSES_PER_PAGE;
+            const fetchLimit = pageSize + 1;
+
+            const constraints: QueryConstraint[] = [
+                where("userId", "==", userId),
+                orderBy("createdAt", "desc"),
+            ];
+
+            if (startDate) {
+                constraints.push(
+                    where("createdAt", ">=", Timestamp.fromDate(startDate))
+                );
+            }
+
+            if (endDate) {
+                constraints.push(
+                    where("createdAt", "<=", Timestamp.fromDate(endDate))
+                );
+            }
+
+            if (minAmount !== null && minAmount !== undefined) {
+                constraints.push(
+                    where("amount", ">=", minAmount)
+                );
+            }
+
+            if (maxAmount !== null && maxAmount !== undefined) {
+                constraints.push(
+                    where("amount", "<=", maxAmount)
+                );
+            }
+
+            if (searchTerm) {
+                const normalized = searchTerm.toLowerCase();
+                constraints.push(
+                    where("description", ">=", normalized),
+                    where("description", "<=", normalized + "\uf8ff")
+                );
+            }
+
+            const queryForTotalCount = query(collection(db, collectionName), ...constraints);
+            const totalCount = await fetchTotalCount(queryForTotalCount);
+
+            if (cursor) {
+                // next
+                constraints.push(startAfter(cursor), limit(fetchLimit));
+
+                //prev
+                // constraints.push(endBefore(cursor), limitToLast(fetchLimit));
+            } else {
+                constraints.push(limit(fetchLimit));
+            }
+
+            const q = query(collection(db, collectionName), ...constraints);
+            const snapshot = await getDocs(q);
+
+            const data: WithId<T>[] = snapshot.docs
+                .slice(0, pageSize)
+                .map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                })) as WithId<T>[];
+
+            const hasMore = snapshot.docs.length > pageSize;
+
+            const pagination = {
+                hasMore,
+                lastDoc: snapshot.docs[snapshot.docs.length - 2] ?? null,
+                pageSize: EXPENSES_PER_PAGE,
+                totalCount
+            }
+
+            return {
+                data,
+                pagination
+            };
+        }, `Failed to fetch data from ${collectionName}`)
+    },
+
+    getTotalCount: async (
+        q: Query<DocumentData, DocumentData>
+    ) => {
+        return await fetchTotalCount(q);
     }
 }
