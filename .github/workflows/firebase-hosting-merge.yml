@@ -37,14 +37,8 @@ jobs:
 
       - name: Deploy Firestore indexes and rules
         run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_RECEIPT_ANALYZER_501D3 }}" | base64 --decode > "google-application-credentials.json"
-          firebase deploy --only firestore --non-interactive
-          rm -rf "google-application-credentials.json"
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: "google-application-credentials.json"
-
-      - name: Cleanup credentials
-        if: always()
-        run: |
-          rm -rf "google-application-credentials.json"
+          npm install -g firebase-tools
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_RECEIPT_ANALYZER_501D3 }}' > $HOME/gcloud-key.json
+          export GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-key.json
+          firebase deploy --only firestore --project ${{ secrets.FIREBASE_PROJECT_ID }} --non-interactive
 
