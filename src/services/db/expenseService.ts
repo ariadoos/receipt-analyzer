@@ -124,7 +124,6 @@ export const expenseService = {
             }
             constraints.push(limit(fetchLimit));
 
-            console.log(constraints);
             const q = query(collection(db, collectionName), ...constraints);
             const snapshot = await getDocs(q);
 

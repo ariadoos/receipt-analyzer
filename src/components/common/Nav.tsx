@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useLocation } from 'react-router-dom'
-import { ROUTES } from '@/config/routes'
+import { ROUTES } from '@/routes/routes'
 
 const Nav = () => {
     const navItems = ROUTES.filter(route => route.useInNavigation);

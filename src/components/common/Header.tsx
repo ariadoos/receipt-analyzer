@@ -1,6 +1,6 @@
 import { ModeToggle } from '@/components/mode-toggle'
 import Nav from './Nav'
-import { ROUTES } from '@/config/routes';
+import { ROUTES } from '@/routes/routes';
 import { useLocation } from 'react-router-dom';
 
 const Header = () => {

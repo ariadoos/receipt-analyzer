@@ -1,5 +1,5 @@
 import Layout from '@/components/common/Layout'
-import { ROUTES } from '@/config/routes'
+import { ROUTES } from '@/routes/routes'
 import { ThemeProvider } from '@/context/theme-provider'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import './App.css'
