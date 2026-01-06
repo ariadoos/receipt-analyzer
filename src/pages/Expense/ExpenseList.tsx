@@ -37,7 +37,7 @@ const ExpensesList = () => {
     if (!initialLoading && error)
         return <ErrorState error={error} onRetry={refetch} />
 
-    if (!initialLoading && !error && expenses.length === 0)
+    if (initialLoading && !error && expenses.length === 0)
         return <EmptyState
             title="No expenses yet"
             description="Get started by creating your first expense." />
@@ -79,7 +79,7 @@ const ExpensesList = () => {
             </div>
 
             {/* Expenses List */}
-            {expenses.length === 0 ? (
+            {!initialLoading && expenses.length === 0 ? (
                 <EmptyState
                     title="No expenses match your filters"
                     description="Try adjusting your filter criteria."

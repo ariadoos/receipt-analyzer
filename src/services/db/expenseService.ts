@@ -26,7 +26,7 @@ export type PaginationState = {
     lastDoc: QueryDocumentSnapshot<DocumentData, DocumentData> | null;
 }
 
-export const EXPENSES_PER_PAGE = 10;
+export const EXPENSES_PER_PAGE = 5;
 
 const fetchTotalCount = async (q: Query<DocumentData, DocumentData>) => {
     const snapshot = await getCountFromServer(q);
@@ -86,54 +86,43 @@ export const expenseService = {
             const fetchLimit = pageSize + 1;
 
             const constraints: QueryConstraint[] = [
-                where("userId", "==", userId),
-                orderBy("createdAt", "desc"),
+                where("userId", "==", userId)
             ];
 
-            if (startDate) {
-                constraints.push(
-                    where("createdAt", ">=", Timestamp.fromDate(startDate))
-                );
+            // 1. AMOUNT FILTERS (Inequality)
+            if (minAmount && !isNaN(parseFloat(minAmount))) {
+                constraints.push(where("amount", ">=", parseFloat(minAmount)));
+            }
+            if (maxAmount && !isNaN(parseFloat(maxAmount))) {
+                constraints.push(where("amount", "<=", parseFloat(maxAmount)));
             }
 
-            if (endDate) {
-                constraints.push(
-                    where("createdAt", "<=", Timestamp.fromDate(endDate))
-                );
-            }
-
-            if (minAmount !== null && minAmount !== undefined && !isNaN(parseInt(minAmount))) {
-                constraints.push(
-                    where("amount", ">=", parseInt(minAmount))
-                );
-            }
-
-            if (maxAmount !== null && maxAmount !== undefined && !isNaN(parseInt(maxAmount))) {
-                constraints.push(
-                    where("amount", "<=", parseInt(maxAmount))
-                );
-            }
-
+            // 2. SEARCH TERM (Inequality - "Starts With")
             if (searchTerm) {
                 const normalized = searchTerm.toLowerCase();
-                constraints.push(
-                    where("description", ">=", normalized),
-                    where("description", "<=", normalized + "\uf8ff")
-                );
+                constraints.push(where("description", ">=", normalized));
+                constraints.push(where("description", "<=", normalized + "\uf8ff"));
             }
 
-            // const queryForTotalCount = query(collection(db, collectionName), ...constraints);
-            // const totalCount = await fetchTotalCount(queryForTotalCount);
+            // 3. DATE FILTERS (Inequality)
+            if (startDate) {
+                constraints.push(where("createdAt", ">=", Timestamp.fromDate(startDate)));
+            }
+            if (endDate) {
+                constraints.push(where("createdAt", "<=", Timestamp.fromDate(endDate)));
+            }
 
+            const queryForTotalCount = query(collection(db, collectionName), ...constraints);
+            const totalCount = await fetchTotalCount(queryForTotalCount);
+
+            // 4. SORTING
+            constraints.push(orderBy("createdAt", "desc"));
+
+            // 5. PAGINATION
             if (cursor) {
-                // next
-                constraints.push(startAfter(cursor), limit(fetchLimit));
-
-                //prev
-                // constraints.push(endBefore(cursor), limitToLast(fetchLimit));
-            } else {
-                constraints.push(limit(fetchLimit));
+                constraints.push(startAfter(cursor));
             }
+            constraints.push(limit(fetchLimit));
 
             console.log(constraints);
             const q = query(collection(db, collectionName), ...constraints);
@@ -152,7 +141,7 @@ export const expenseService = {
                 hasMore,
                 lastDoc: snapshot.docs[snapshot.docs.length - 2] ?? null,
                 pageSize: EXPENSES_PER_PAGE,
-                totalCount: 0
+                totalCount
             }
 
             return {
