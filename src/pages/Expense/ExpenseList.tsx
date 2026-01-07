@@ -2,16 +2,30 @@ import EmptyState from "@/components/common/EmptyState";
 import ErrorState from "@/components/common/ErrorState";
 import ListSkeleton from "@/components/common/ListSkeleton";
 import { Button } from "@/components/ui/button";
-import useExpenses from "@/hooks/useExpenses";
 import { useCategoriesStore } from "@/store/useCategoriesStore";
-import { Filter } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useExpensesStore } from "@/store/useExpensesStore";
+import { ChevronDown, Filter } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import ExpenseFilter from "./ExpenseFilter";
 import ExpenseListItem from "./ExpenseListItem";
 
 
 const ExpensesList = () => {
-    const { expenses, pagination, initialLoading, error, filters, setFilters, refetch } = useExpenses();
+    const userId = 1;
+
+    const {
+        expenses,
+        pagination,
+        initialLoading,
+        isLoading,
+        error,
+        filters,
+        setFilters,
+        refetch,
+        loadMore,
+        fetchExpenses
+    } = useExpensesStore();
+
     const { categories, loading: categoriesLoading } = useCategoriesStore();
 
     const [showFilters, setShowFilters] = useState(false);
@@ -21,8 +35,6 @@ const ExpensesList = () => {
         [categories]
     );
 
-    console.log('expenses', expenses);
-
     const activeFilterCount = [
         filters.searchTerm,
         filters.startDate,
@@ -31,11 +43,15 @@ const ExpensesList = () => {
         filters.maxAmount
     ].filter(Boolean).length;
 
+    useEffect(() => {
+        fetchExpenses(userId, false, null);
+    }, [userId, filters, fetchExpenses]);
+
     if (initialLoading || categoriesLoading)
         return <ListSkeleton count={5} className="mt-2" />
 
     if (!initialLoading && error)
-        return <ErrorState error={error} onRetry={refetch} />
+        return <ErrorState error={error} onRetry={() => refetch(1)} />
 
     if (initialLoading && !error && expenses.length === 0)
         return <EmptyState
@@ -99,18 +115,18 @@ const ExpensesList = () => {
                 </div>
             )}
 
-            {/* Load More Button */}
-            {/* {hasMore && (
+            {pagination.hasMore && (
                 <div className="text-center pt-4">
-                    <button
-                        onClick={() => setItemsToShow(prev => prev + ITEMS_PER_PAGE)}
+                    <Button
+                        onClick={() => loadMore(userId)}
+                        disabled={isLoading}
                         className="px-6 py-3 bg-muted text-foreground rounded-lg font-semibold hover:bg-muted/80 transition-colors inline-flex items-center gap-2"
                     >
-                        Load More ({filteredAndSortedExpenses.length - itemsToShow} remaining)
+                        {isLoading ? "Loading..." : `Load More (${pagination.totalCount - expenses.length} remaining)`}
                         <ChevronDown size={18} />
-                    </button>
+                    </Button>
                 </div>
-            )} */}
+            )}
         </div>
     )
 };

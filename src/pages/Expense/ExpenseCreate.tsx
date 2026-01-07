@@ -3,10 +3,12 @@ import * as services from '@/services/db';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { ExpenseForm, type ExpenseFormData } from './ExpenseForm';
+import { useExpensesStore } from '@/store/useExpensesStore';
 
 const ExpenseCreate = () => {
     const userId = 1;
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const { refetch } = useExpensesStore();
 
     const handleCreate = async (data: ExpenseFormData, resetForm: () => void) => {
         if (isProcessing) return;
@@ -20,7 +22,9 @@ const ExpenseCreate = () => {
         }
 
         try {
+            const userId = 1;
             await services.expenseService.create(expenseData);
+            refetch(userId);
             toast.success("Expense added successfully");
             resetForm();
         } catch (error: unknown) {
