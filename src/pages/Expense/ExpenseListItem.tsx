@@ -30,7 +30,7 @@ const CategoryListItem = memo<ExpenseListItemProps>(({
 }) => {
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-    const { updateExpense } = useExpensesStore();
+    const { updateExpense, deleteExpense } = useExpensesStore();
 
     const categoryColor = category?.color ? getCategoryColor(category.color) : getCategoryColor(getRandomColorName());
 
@@ -60,7 +60,7 @@ const CategoryListItem = memo<ExpenseListItemProps>(({
 
         setIsProcessing(true);
 
-        services.expenseService.delete(expenseId)
+        deleteExpense(expenseId)
             .then(() => {
                 toast.success("Expense deleted successfully");
             })

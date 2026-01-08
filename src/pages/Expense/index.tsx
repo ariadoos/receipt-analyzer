@@ -14,11 +14,11 @@ const Expense = () => {
                 </CardContent>
             </Card>
 
-            < Card className="rounded-md md:max-w-2xl w-full" >
+            <Card className="rounded-md md:max-w-2xl w-full" >
                 <CardHeader>
                     <CardTitle>Your Expenses</CardTitle>
                 </CardHeader>
-                < CardContent >
+                <CardContent >
                     {<ExpensesList />}
                 </CardContent>
             </Card>

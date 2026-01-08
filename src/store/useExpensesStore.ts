@@ -20,6 +20,7 @@ interface ExpensesActions {
     ) => Promise<void>;
     addExpense: (expense: services.ExpenseFields) => Promise<string>;
     updateExpense: (id: string, expense: Partial<services.ExpenseFields>) => Promise<void>;
+    deleteExpense: (id: string) => Promise<void>;
     loadMore: (userId: number) => void;
     setFilters: (filters: services.ExpensesFilterState) => void;
     refetch: (userId: number, shouldAppend?: boolean, lastDoc?: QueryDocumentSnapshot<DocumentData, DocumentData> | null) => void;
@@ -113,6 +114,22 @@ export const useExpensesStore = create<ExpensesStore>((set, get) => ({
         })
 
         set({ expenses: updateExpenses })
+    },
+
+    deleteExpense: async (id: string) => {
+
+        await services.expenseService.delete(id);
+        const { expenses } = get();
+
+        const updatedExpenses = expenses.filter((exp) => exp.id !== id);
+
+        set((state) => ({
+            expenses: updatedExpenses,
+            pagination: {
+                ...state.pagination,
+                totalCount: state.pagination.totalCount - 1,
+            }
+        }));
     },
 
     loadMore: (userId) => {
