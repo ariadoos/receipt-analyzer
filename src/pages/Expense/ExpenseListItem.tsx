@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { getCategoryColor } from '../../lib/utils';
 import { ExpenseEditDialog } from './ExpenseEditDialog';
 import type { ExpenseFormData } from './ExpenseForm';
+import { useExpensesStore } from '@/store/useExpensesStore';
 
 interface ExpenseListItemProps {
     expense: services.WithId<services.ExpenseFields>;
@@ -29,11 +30,12 @@ const CategoryListItem = memo<ExpenseListItemProps>(({
 }) => {
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+    const { updateExpense } = useExpensesStore();
 
     const categoryColor = category?.color ? getCategoryColor(category.color) : getCategoryColor(getRandomColorName());
 
-    const handleUpdate = (data: ExpenseFormData, editingId: string) => {
-        if (!editingId || isProcessing) return;
+    const handleUpdate = (data: ExpenseFormData) => {
+        if (isProcessing) return;
 
         setIsProcessing(true);
 
@@ -42,7 +44,8 @@ const CategoryListItem = memo<ExpenseListItemProps>(({
             amount: data.amount ? Number(data.amount) : undefined,
         }
 
-        services.expenseService.update(editingId, categoryData)
+        const editingId = expense.id;
+        updateExpense(editingId, categoryData)
             .then(() => {
                 toast.success("Category updated successfully");
                 setDialogOpen(false);
@@ -116,7 +119,7 @@ const CategoryListItem = memo<ExpenseListItemProps>(({
                 initialData={parseInitialData(expense)}
                 dialogOpen={true}
                 setDialogOpen={setDialogOpen}
-                handleUpdate={() => handleUpdate(parseInitialData(expense), expense.id)}
+                handleUpdate={handleUpdate}
                 handleCancel={() => setDialogOpen(false)}
             />}
         </div>

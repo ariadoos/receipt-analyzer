@@ -6,7 +6,7 @@ import {
     DialogTitle
 } from "@/components/ui/dialog"
 import { ExpenseForm, type ExpenseFormData } from "./ExpenseForm"
-//
+
 type ExpenseEditDialogProps = {
     id: string
     isProcessing?: boolean
@@ -16,7 +16,7 @@ type ExpenseEditDialogProps = {
     dialogOpen: boolean,
     setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
     handleCancel?: () => void
-    handleUpdate: () => void
+    handleUpdate: (data: ExpenseFormData) => void
 }
 
 const ExpenseEditDialog = ({

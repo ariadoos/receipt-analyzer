@@ -18,7 +18,7 @@ interface ExpenseFormProps {
     id: string;
     initialData?: ExpenseFormData;
     isProcessing?: boolean;
-    onSubmit: (data: ExpenseFormData, resetForm: () => void) => void;
+    onSubmit: (data: ExpenseFormData, resetForm?: () => void) => void;
     onCancel?: () => void;
     buttonLabel?: string;
 }

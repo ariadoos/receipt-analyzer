@@ -1,6 +1,6 @@
 import { FirestoreServiceError } from '@/lib/dbErrors';
 import * as services from '@/services/db';
-import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
+import { Timestamp, type DocumentData, type QueryDocumentSnapshot } from 'firebase/firestore';
 import { create } from 'zustand';
 
 interface ExpensesState {
@@ -18,6 +18,8 @@ interface ExpensesActions {
         shouldAppend?: boolean,
         cursor?: QueryDocumentSnapshot<DocumentData, DocumentData> | null
     ) => Promise<void>;
+    addExpense: (expense: services.ExpenseFields) => Promise<string>;
+    updateExpense: (id: string, expense: Partial<services.ExpenseFields>) => Promise<void>;
     loadMore: (userId: number) => void;
     setFilters: (filters: services.ExpensesFilterState) => void;
     refetch: (userId: number, shouldAppend?: boolean, lastDoc?: QueryDocumentSnapshot<DocumentData, DocumentData> | null) => void;
@@ -82,6 +84,35 @@ export const useExpensesStore = create<ExpensesStore>((set, get) => ({
                 expenses: []
             });
         }
+    },
+
+    addExpense: async (expense: services.ExpenseFields) => {
+        const expenseId = await services.expenseService.create(expense);
+
+        const { refetch } = get();
+        refetch(expense.userId, false, null);
+
+        return expenseId;
+    },
+
+    updateExpense: async (id: string, expense: Partial<Omit<services.ExpenseFields, 'userId'>>) => {
+        await services.expenseService.update(id, expense);
+
+        const { expenses } = get();
+
+        const updateExpenses = expenses.map((exp) => {
+            if (exp.id === id) {
+                return {
+                    ...exp,
+                    ...expense,
+                    updatedAt: Timestamp.now()
+                }
+            }
+
+            return exp;
+        })
+
+        set({ expenses: updateExpenses })
     },
 
     loadMore: (userId) => {

@@ -1,16 +1,15 @@
 import { FirestoreServiceError } from '@/lib/dbErrors';
-import * as services from '@/services/db';
+import { useExpensesStore } from '@/store/useExpensesStore';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { ExpenseForm, type ExpenseFormData } from './ExpenseForm';
-import { useExpensesStore } from '@/store/useExpensesStore';
 
 const ExpenseCreate = () => {
     const userId = 1;
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
-    const { refetch } = useExpensesStore();
+    const { addExpense } = useExpensesStore();
 
-    const handleCreate = async (data: ExpenseFormData, resetForm: () => void) => {
+    const handleCreate = async (data: ExpenseFormData, resetForm?: () => void) => {
         if (isProcessing) return;
 
         setIsProcessing(true);
@@ -22,11 +21,9 @@ const ExpenseCreate = () => {
         }
 
         try {
-            const userId = 1;
-            await services.expenseService.create(expenseData);
-            refetch(userId);
+            await addExpense(expenseData);
             toast.success("Expense added successfully");
-            resetForm();
+            resetForm?.();
         } catch (error: unknown) {
             if (error instanceof FirestoreServiceError) {
                 toast.error(`Error adding expense: ${error.message}`);
