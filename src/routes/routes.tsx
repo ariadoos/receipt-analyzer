@@ -1,5 +1,5 @@
 import Category from '@/pages/Category'
-import Dashboard from '@/pages/Dashboard'
+import Dashboard from '@/pages/Dashboard/index'
 import Expense from '@/pages/Expense/index'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { type ReactNode } from 'react'
